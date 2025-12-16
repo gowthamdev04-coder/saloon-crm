@@ -12,8 +12,9 @@ import {
   Box,
   Typography
 } from "@mui/material";
-import { useState } from "react";
-import { createItem } from "../services/api";
+import { useEffect, useState } from "react";
+import ExecutiveSummary from "../components/ExecutiveSummary";
+import { createItem, fetchItems } from "../services/api";
 
 const serviceOptions = [
   "Hair Cutting",
@@ -33,6 +34,15 @@ function Home() {
     amount: "",
     staff: ""
   });
+
+  const [items, setItems] = useState([]);
+
+  // Fetch all customers for summary
+  useEffect(() => {
+    fetchItems()
+      .then((res) => setItems(res.data))
+      .catch((err) => console.error("Failed to fetch items", err));
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,9 +80,12 @@ function Home() {
     }
 
     try {
-      await createItem(formData);
+      const newItem = await createItem(formData);
       toast.success("Customer added successfully!");
       setFormData({ name: "", phone: "", services: [], amount: "", staff: "" });
+
+      // Update items for Executive Summary
+      setItems((prev) => [...prev, newItem.data]);
     } catch (error) {
       console.error(error);
       toast.error("Failed to add customer!");
@@ -80,71 +93,79 @@ function Home() {
   };
 
   return (
-    <Box sx={{ maxWidth: 500, mx: "auto", mt: 5 }}>
-      <Typography variant="h4" gutterBottom>Add Customer</Typography>
+    <Box sx={{ maxWidth: 900, mx: "auto", mt: 5 }}>
+      {/* Executive Summary */}
+      <ExecutiveSummary items={items} />
 
-      <TextField
-        fullWidth
-        label="Name"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        sx={{ mb: 2 }}
-      />
+      {/* Add Customer Form */}
+      <Box sx={{ maxWidth: 500, mx: "auto", mt: 5 }}>
+        <Typography variant="h4" gutterBottom>Add Customer</Typography>
 
-      <TextField
-        fullWidth
-        label="Phone Number"
-        name="phone"
-        value={formData.phone}
-        onChange={handleChange}
-        sx={{ mb: 2 }}
-        type="tel"
-      />
-
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel>Services</InputLabel>
-        <Select
-          multiple
-          value={formData.services}
-          onChange={handleMultiSelectChange}
-          input={<OutlinedInput label="Services" />}
-          renderValue={(selected) => selected.join(", ")}
-        >
-          {serviceOptions.map((service) => (
-            <MenuItem key={service} value={service}>
-              <Checkbox checked={formData.services.includes(service)} />
-              <ListItemText primary={service} />
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <TextField
-        fullWidth
-        type="number"
-        label="Amount"
-        name="amount"
-        value={formData.amount}
-        onChange={handleChange}
-        sx={{ mb: 2 }}
-      />
-
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel>Staff Assisted</InputLabel>
-        <Select
-          name="staff"
-          value={formData.staff}
+        <TextField
+          fullWidth
+          label="Name"
+          name="name"
+          value={formData.name}
           onChange={handleChange}
-          label="Staff Assisted"
-        >
-          {staffOptions.map((staff) => (
-            <MenuItem key={staff} value={staff}>{staff}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+          sx={{ mb: 2 }}
+        />
 
-      <Button variant="contained" color="primary" fullWidth onClick={addItem}>Add</Button>
+        <TextField
+          fullWidth
+          label="Phone Number"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          sx={{ mb: 2 }}
+          type="tel"
+        />
+
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>Services</InputLabel>
+          <Select
+            multiple
+            value={formData.services}
+            onChange={handleMultiSelectChange}
+            input={<OutlinedInput label="Services" />}
+            renderValue={(selected) => selected.join(", ")}
+          >
+            {serviceOptions.map((service) => (
+              <MenuItem key={service} value={service}>
+                <Checkbox checked={formData.services.includes(service)} />
+                <ListItemText primary={service} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <TextField
+          fullWidth
+          type="number"
+          label="Amount"
+          name="amount"
+          value={formData.amount}
+          onChange={handleChange}
+          sx={{ mb: 2 }}
+        />
+
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>Staff Assisted</InputLabel>
+          <Select
+            name="staff"
+            value={formData.staff}
+            onChange={handleChange}
+            label="Staff Assisted"
+          >
+            {staffOptions.map((staff) => (
+              <MenuItem key={staff} value={staff}>{staff}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <Button variant="contained" color="primary" fullWidth onClick={addItem}>
+          Add
+        </Button>
+      </Box>
     </Box>
   );
 }

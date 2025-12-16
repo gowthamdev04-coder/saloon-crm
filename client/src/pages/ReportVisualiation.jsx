@@ -3,6 +3,12 @@ import { useEffect, useState } from "react";
 import { fetchItems } from "../services/api";
 import DashboardGraph from "../components/DashboardGraph";
 import PeakHoursChart from "../components/PeakHoursChart";
+import CustomersByStaffChart from "../components/CustomersByStaffChart";
+import CustomersOverTimeChart from "../components/CustomersOverTimeChart";
+import ExecutiveSummary from "../components/ExecutiveSummary";
+import RevenueOverTimeChart from "../components/RevenueOverTimeChart";
+import ServicesSummaryChart from "../components/ServicesSummaryChart";
+
 import { toast } from "react-toastify";
 
 function ReportVisualiation() {
@@ -27,7 +33,11 @@ function ReportVisualiation() {
         Reports & Visualization
       </Typography>
 
-      <DashboardGraph items={items} />
+      {/* <DashboardGraph items={items} /> */}
+      <CustomersByStaffChart items={items} />
+      <CustomersOverTimeChart items={items} />
+      <ServicesSummaryChart  items={items} />
+      <RevenueOverTimeChart items={items} />
 
       <Typography variant="h5" gutterBottom sx={{ mt: 5 }}>
         Peak Hours

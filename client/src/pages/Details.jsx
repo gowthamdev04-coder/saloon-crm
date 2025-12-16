@@ -40,7 +40,7 @@ const serviceOptions = [
 function Details() {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [filterStaff, setFilterStaff] = useState("");
 
   const [editOpen, setEditOpen] = useState(false);
